@@ -92,9 +92,6 @@ poss(close, true).
 prim_action(look(N)) :- fl(N).  % sense floor N light
 poss(look(_), true).
 
-prim_action(say(_)).
-poss(say(_), true).
-
 
   /* EXOGENOUS ACTIONS */
 exog_action(heat).            % increase temperature
@@ -183,7 +180,6 @@ proc(control(congolog), [prioritized_interrupts(
          interrupt(n, pending_floor(n), serve_floor(n)),
          interrupt(above_floor(1), down),
          interrupt(neg(door_open), open),
-        %  interrupt(true, say("Waiting at gound floor"))])]).
          interrupt(true, ?(wait_exog_action))])]).
 
 
@@ -192,29 +188,26 @@ proc(control(indigolog), [prioritized_interrupts(
         [interrupt(and(too_hot, neg(fan)), toggle),
          interrupt(and(too_cold, fan), toggle),
          interrupt(alarm, ring),
-        %  interrupt(some_pending, search(minimize_motion(0))),
-          interrupt(some_pending,
+         interrupt(some_pending,
             [ unset(new_request),
               gexec(neg(new_request), search(minimize_motion(0), "Searching for plan"))
               ]),
          interrupt(above_floor(1), down),
          interrupt(neg(door_open), open),
-        %  interrupt(true, say("Waiting at gound floor"))])]).
          interrupt(true, ?(wait_exog_action))])]).
 
 
 proc(control(indigolog_ends), [prioritized_interrupts(
-        [interrupt(and(too_hot, neg(fan)), toggle),
-         interrupt(and(too_cold, fan), toggle),
-         interrupt(alarm, ring),
-        %  interrupt(some_pending, search(minimize_motion(0))),
-          interrupt(some_pending,
-            [ unset(new_request),
-              gexec(neg(new_request), search(minimize_motion(0), "Searching for plan"))
-              ]),
-         interrupt(above_floor(1), down),
-         interrupt(neg(door_open), open)]),
-         say("Waiting at gound floor, thanks...")]).
+          [interrupt(and(too_hot, neg(fan)), toggle),
+           interrupt(and(too_cold, fan), toggle),
+           interrupt(alarm, ring),
+           interrupt(some_pending,
+              [ unset(new_request),
+                gexec(neg(new_request), search(minimize_motion(0), "Searching for plan"))
+                ]),
+           interrupt(above_floor(1), down),
+           interrupt(neg(door_open), open)])
+           ]).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -11,7 +11,7 @@ exog_occurs(_) :- fail.
 
 max_floor(10).
 
-fl(N) :- max_floor(M), between(1, M, N).    % the 6 elevator floors
+fl(N) :- max_floor(M), between(1, M, N).    % the 10 elevator floors
 
 % Actions
 prim_action(down).              % elevator down one floor
@@ -21,7 +21,7 @@ prim_action(close).             % close elevator door
 prim_action(off(N)) :- fl(N).   % turn off call button on floor n
 
 % Fluents
-prim_fluent(floor).             % the floor the elevator is on (1 to 6)
+prim_fluent(floor).             % the floor the elevator is on (1 to 10)
 prim_fluent(light(N)) :- fl(N). % call button of floor n (on or off)
 
 % Causal laws
@@ -36,7 +36,7 @@ poss(off(N),  and(floor = N, light(N) = on)).
 poss(open, true).
 poss(close, true).
 
-% Initial state: elevator is at floor 3, and lights 2 and 5 are on
+% Initial state: elevator is at floor 3, and lights 2, 5, and 9 are on
 initially(floor, 3).
 initially(light(N), on) :- member(N, [2, 5, 9]).
 initially(light(N), off) :- fl(N), \+ initially(light(N), on).

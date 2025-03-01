@@ -19,7 +19,6 @@
 %    Environment manager
 %    Evaluation engine/Projector
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% :- ['../../config.pl'].   % now loaded when calling swipl
 
 :- dir(indigolog, F), consult(F).
 :- dir(eval_bat, F), consult(F).    % after interpreter always!

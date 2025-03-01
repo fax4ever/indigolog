@@ -17,7 +17,7 @@ exog_occurs(A) :- ask_exog_occurs(A).
 % number of floors, change for larger buildings
 max_floor(3).
 
-fl(N) :- max_floor(M), between(1, M, N).    % the 6 elevator floors
+fl(N) :- max_floor(M), between(1, M, N).    % the 3 elevator floors
 
   /*  FLUENTS and CAUSAL LAWS */
 prim_fluent(floor).             % the floor the elevator is on
