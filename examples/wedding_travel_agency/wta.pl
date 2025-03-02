@@ -40,30 +40,30 @@ travel(ettal, munchen, 66, 7).
 travel(ettal, innsbruck, 69, 7).
 travel(munchen, innsbruck, 121, 12).
 
-cost(hotelEuropaBamberg, 89)
-cost(parkInnNurnberg, 80)
-cost(ibisStylesRegensburg, 138)
-cost(boutiqueHotelMunchen, 170)
-cost(hotelEngelLindau, 150)
-cost(ibisBregenz, 94)
-cost(hotelSchlosskroneFussen, 134)
-cost(youthHostelInnsbruck, 88)
-cost(hotelRothenburgerHof, 70)
-cost(hotelStraussWurzburg, 89)
-cost(klosterhotelEttal, 143)
-cost(hotelPalaceBologna, 115)
+cost(hotelEuropaBamberg, 89).
+cost(parkInnNurnberg, 80).
+cost(ibisStylesRegensburg, 138).
+cost(boutiqueHotelMunchen, 170).
+cost(hotelEngelLindau, 150).
+cost(ibisBregenz, 94).
+cost(hotelSchlosskroneFussen, 134).
+cost(youthHostelInnsbruck, 88).
+cost(hotelRothenburgerHof, 70).
+cost(hotelStraussWurzburg, 89).
+cost(klosterhotelEttal, 143).
+cost(hotelPalaceBologna, 115).
 
-att(neuschwansteinCastle, 240, 21)
-att(ettalAbbey, 60, 0)
-att(schlossLinderhof, 120, 10)
-att(lindauHafen, 120, 0)
-att(hohesSchloss, 60, 5)
-att(pfander, 60, 10)
-att(rothenburgObDerTauber, 120, 0)
-att(wurzburgResidence, 120, 10)
-att(bambergOldTown, 120, 0)
-att(imperialCastleOfNuremberg, 60, 7)
-att(altesRathausRegensburg, 30, 0)
-att(munichResidence, 90, 10)
-att(schlossNymphenburg, 120, 10)
-att(piazzaMaggiore, 20, 0)
+att(neuschwansteinCastle, 240, 21).
+att(ettalAbbey, 60, 0).
+att(schlossLinderhof, 120, 10).
+att(lindauHafen, 120, 0).
+att(hohesSchloss, 60, 5).
+att(pfander, 60, 10).
+att(rothenburgObDerTauber, 120, 0).
+att(wurzburgResidence, 120, 10).
+att(bambergOldTown, 120, 0).
+att(imperialCastleOfNuremberg, 60, 7).
+att(altesRathausRegensburg, 30, 0).
+att(munichResidence, 90, 10).
+att(schlossNymphenburg, 120, 10).
+att(piazzaMaggiore, 20, 0).
