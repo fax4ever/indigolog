@@ -82,10 +82,6 @@ attraction_info(munichResidence, munchen, 90, 10).
 attraction_info(schlossNymphenburg, munchen, 120, 10).
 attraction_info(piazzaMaggiore, bologna, 20, 0).
 
-% each day I can spend no more than 10 hours moving and visting stuff %
-
-max_day_activity_minutes(600).
-
 % Fluents
 
 prim_fluent(at(P)) :- place(P).
@@ -105,17 +101,17 @@ prim_action(rest(H)) :- hotel(H).
 
 poss(move(To), and(
     at(From),
-    travel(From, To, _, _, _)
-    % re-add condition:
-    % travel(From, To, Time, _, _),
-    % neg(day_activity_minutes + Time > max_day_activity_minutes)
+    travel(From, To, Time, _, _),
+    % each day I can spend no more than 10 hours moving and visting stuff %
+    =<(+(day_activity_minutes, Time), 600)
 )).
 
 poss(visit(A), and(
     neg(visited(A)),
     at(P),
     attraction_info(A, P, Time, _),
-    neg(day_activity_minutes + Time > max_day_activity_minutes)
+    % each day I can spend no more than 10 hours moving and visting stuff %
+    =<(+(day_activity_minutes, Time), 600)
 )).
 
 poss(rest(H), and(
@@ -170,7 +166,7 @@ proc(pi_move, pi([to], move(to))).
 proc(pi_visit, pi([a], visit(a))).
 proc(pi_rest, pi([h], rest(h))).
 
-% choosing randomly between all 3 actions
+% choosing non-deterministically between all 3 actions
 proc(choose_action, ndet(pi_move, pi_visit, pi_rest)).
 
 % control: full_search
