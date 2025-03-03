@@ -9,7 +9,15 @@ exog_occurs(_) :- fail.
 place(P) :- member(P, [bamberg, nurnberg, regensburg, munchen, lindau, bregenz, fussen, innsbruck, 
 rothenburg, wurzburg, rome, bologna, ettal]).
 
-% hotel(name, place, time, cost, type)
+hotel(H) :- member(H, [hotelEuropaBamberg, parkInnNurnberg, ibisStylesRegensburg, boutiqueHotelMunchen, 
+hotelEngelLindau, ibisBregenz, hotelSchlosskroneFussen, youthHostelInnsbruck, hotelRothenburgerHof, 
+hotelStraussWurzburg, klosterhotelEttal, hotelPalaceBologna]).
+
+attraction(A) :- member(A, [neuschwansteinCastle, ettalAbbey, schlossLinderhof, lindauHafen, hohesSchloss, 
+pfander, rothenburgObDerTauber, wurzburgResidence, bambergOldTown, imperialCastleOfNuremberg, 
+altesRathausRegensburg, munichResidence, schlossNymphenburg, piazzaMaggiore]).
+
+% travel(from, to, time, cost, type)
 
 travel(rome, munchen, 120, 200, air).
 travel(munchen, rome, 120, 200, air).
@@ -42,44 +50,46 @@ travel(munchen, innsbruck, 121, 12, car).
 
 travel(X, Y, _, _) :- travel(Y, X, _, _).
 
-% hotel(name, place, cost)
+% hotel_info(hotel, place, cost)
 
-hotel(hotelEuropaBamberg, bamberg, 89).
-hotel(parkInnNurnberg, nurnberg, 80).
-hotel(ibisStylesRegensburg, regensburg, 138).
-hotel(boutiqueHotelMunchen, munchen, 170).
-hotel(hotelEngelLindau, lindau, 150).
-hotel(ibisBregenz, bregenz, 94).
-hotel(hotelSchlosskroneFussen, fussen, 134).
-hotel(youthHostelInnsbruck, innsbruck, 88).
-hotel(hotelRothenburgerHof, rothenburg, 70).
-hotel(hotelStraussWurzburg, wurzburg, 89).
-hotel(klosterhotelEttal, ettal, 143).
-hotel(hotelPalaceBologna, bologna, 115).
+hotel_info(hotelEuropaBamberg, bamberg, 89).
+hotel_info(parkInnNurnberg, nurnberg, 80).
+hotel_info(ibisStylesRegensburg, regensburg, 138).
+hotel_info(boutiqueHotelMunchen, munchen, 170).
+hotel_info(hotelEngelLindau, lindau, 150).
+hotel_info(ibisBregenz, bregenz, 94).
+hotel_info(hotelSchlosskroneFussen, fussen, 134).
+hotel_info(youthHostelInnsbruck, innsbruck, 88).
+hotel_info(hotelRothenburgerHof, rothenburg, 70).
+hotel_info(hotelStraussWurzburg, wurzburg, 89).
+hotel_info(klosterhotelEttal, ettal, 143).
+hotel_info(hotelPalaceBologna, bologna, 115).
 
-% attraction(name, place, time, cost)
+% attraction_info(attraction, place, time, cost)
 
-attraction(neuschwansteinCastle, fussen, 240, 21).
-attraction(ettalAbbey, ettal, 60, 0).
-attraction(schlossLinderhof, ettal, 120, 10).
-attraction(lindauHafen, lindau, 120, 0).
-attraction(hohesSchloss, fussen, 60, 5).
-attraction(pfander, bregenz, 60, 10).
-attraction(rothenburgObDerTauber, rothenburg, 120, 0).
-attraction(wurzburgResidence, wurzburg, 120, 10).
-attraction(bambergOldTown, bamberg, 120, 0).
-attraction(imperialCastleOfNuremberg, nurnberg, 60, 7).
-attraction(altesRathausRegensburg, regensburg, 30, 0).
-attraction(munichResidence, munchen, 90, 10).
-attraction(schlossNymphenburg, munchen, 120, 10).
-attraction(piazzaMaggiore, bologna, 20, 0).
+attraction_info(neuschwansteinCastle, fussen, 240, 21).
+attraction_info(ettalAbbey, ettal, 60, 0).
+attraction_info(schlossLinderhof, ettal, 120, 10).
+attraction_info(lindauHafen, lindau, 120, 0).
+attraction_info(hohesSchloss, fussen, 60, 5).
+attraction_info(pfander, bregenz, 60, 10).
+attraction_info(rothenburgObDerTauber, rothenburg, 120, 0).
+attraction_info(wurzburgResidence, wurzburg, 120, 10).
+attraction_info(bambergOldTown, bamberg, 120, 0).
+attraction_info(imperialCastleOfNuremberg, nurnberg, 60, 7).
+attraction_info(altesRathausRegensburg, regensburg, 30, 0).
+attraction_info(munichResidence, munchen, 90, 10).
+attraction_info(schlossNymphenburg, munchen, 120, 10).
+attraction_info(piazzaMaggiore, bologna, 20, 0).
+
+% each day I can spend no more than 10 hours moving and visting stuff %
 
 max_day_activity_minutes(600).
 
 % Fluents
 
 prim_fluent(at(P)) :- place(P).
-prim_fluent(visited(N)) :- attraction(N, _, _, _).
+prim_fluent(visited(A)) :- attraction(A).
 prim_fluent(day_activity_minutes).
 prim_fluent(days).
 prim_fluent(attractions_visited).
@@ -87,45 +97,90 @@ prim_fluent(total_cost).
 
 % Actions
 
-prim_action(move(From, To, Time, Cost)) :- travel(From, To, Time, Cost, _).
-prim_action(visit(Name, Place, Time, Cost)) :- attraction(Name, Place, Time, Cost).
-prim_action(rest(Name, Place, Cost)) :- hotel(Name, Place, Cost).
+prim_action(move(P)) :- place(P). 
+prim_action(visit(A)) :- attraction(A).
+prim_action(rest(H)) :- hotel(H).
 
 % Precondition Axioms
 
-poss(move(From, _, Time, _), and(
+poss(move(To), and(
     at(From),
+    travel(From, To, _, _, _)
+    % re-add condition:
+    % travel(From, To, Time, _, _),
+    % neg(day_activity_minutes + Time > max_day_activity_minutes)
+)).
+
+poss(visit(A), and(
+    neg(visited(A)),
+    at(P),
+    attraction_info(A, P, Time, _),
     neg(day_activity_minutes + Time > max_day_activity_minutes)
 )).
 
-poss(visit(Name, Place, Time, _), and(
-    neg(visited(Name)),
-    at(Place),
-    neg(day_activity_minutes + Time > max_day_activity_minutes)
+poss(rest(H), and(
+    at(P),
+    hotel_info(H, P, _)
 )).
-
-poss(rest(_, Place, _), at(Place)).
 
 % Effect Axioms (SSA are derived by the engine automatically)
 
-causes_val(move(From, _, _, _), at(From), false, true).
-causes_val(move(_, To, _, _), at(To), true, true).
-causes_val(move(_, _, Time, _), day_activity_minutes, day_activity_minutes + Time, true).
-causes_val(move(_, _, _, Cost), total_cost, total_cost + Cost, true).
+causes_val(move(To), at(From), false, and(
+    at(From),
+    travel(From, To, _, _, _)
+)).
+causes_val(move(To), at(To), true, true).
+causes_val(move(To), day_activity_minutes, day_activity_minutes + Time, and(
+    at(From),
+    travel(From, To, Time, _, _)
+)).
+causes_val(move(To), total_cost, total_cost + Cost, and(
+    at(From),
+    travel(From, To, _, Cost, _)
+)).
 
-causes_val(visit(_, _, Time, _), day_activity_minutes, day_activity_minutes + Time, true).
-causes_val(visit(_, _, _, Cost), total_cost, total_cost + Cost, true).
-causes_val(visit(Name, _, _, _), visited(Name), true, true).
-causes_val(visit(_, _, _, _), attractions_visited, attractions_visited + 1, true).
+causes_val(visit(A), day_activity_minutes, day_activity_minutes + Time, attraction_info(A, _, Time, _)).
+causes_val(visit(A), total_cost, total_cost + Cost, attraction_info(A, _, _, Cost)).
+causes_val(visit(A), visited(A), true, true).
+causes_val(visit(_), attractions_visited, attractions_visited + 1, true).
 
-causes_val(rest(_, _, _, Cost), total_cost, total_cost + Cost, true).
-causes_val(rest(_, _, _, _), day_activity_minutes, 0, true).
-causes_val(rest(_, _, _, _), days, days + 1, true).
+causes_val(rest(H), total_cost, total_cost + Cost, hotel_info(H, _, Cost)).
+causes_val(rest(_), day_activity_minutes, 0, true).
+causes_val(rest(_), days, days + 1, true).
 
 % Init
 
-initially(at(rome), true).
+initially(at(P), true) :- =(P, rome).
+initially(at(P), false) :- place(P), \+ initially(at(P), true).
 initially(day_activity_minutes, 0).
 initially(days, 0).
 initially(attractions_visited, 0).
 initially(total_cost, 0).
+
+% Definitions of complex conditions
+
+proc(target(N), neg(attractions_visited < N)).
+
+proc(within_days(N), neg(days > N)).
+
+% Definitions of complex actions
+
+% all actions with non-deterministically chosen parameters
+proc(pi_move, pi([to], move(to))).
+proc(pi_visit, pi([a], visit(a))).
+proc(pi_rest, pi([h], rest(h))).
+
+% choosing randomly between all 3 actions
+proc(choose_action, ndet(pi_move, pi_visit, pi_rest)).
+
+% control: full_search
+proc(full_search, [star(choose_action), ?(target(1))]).
+proc(control(full_search), search(full_search)).
+
+% test controls:
+proc(control(test1), [move(munchen)]).
+proc(control(test2), [move(bamberg)]).
+
+
+
+
