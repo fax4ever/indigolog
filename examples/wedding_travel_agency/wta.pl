@@ -21,34 +21,72 @@ altesRathausRegensburg, munichResidence, schlossNymphenburg, piazzaMaggiore]).
 
 travel(rome, munchen, 120, 200, air).
 travel(munchen, rome, 120, 200, air).
+
 travel(rome, bologna, 120, 67, train).
 travel(bologna, rome, 120, 67, train).
+
 travel(bologna, innsbruck, 300, 45, train).
 travel(innsbruck, bologna, 300, 45, train).
+
 travel(bologna, munchen, 420, 70, train).
+travel(munchen, bologna, 420, 70, train).
+
 travel(wurzburg, bamberg, 60, 6, car).
+travel(bamberg, wurzburg, 60, 6, car).
+
 travel(wurzburg, rothenburg, 41, 4, car).
+travel(rothenburg, wurzburg, 41, 4, car).
+
 travel(bamberg, rothenburg, 89, 9, car).
+travel(rothenburg, bamberg, 89, 9, car).
+
 travel(bamberg, nurnberg, 52, 5, car).
+travel(nurnberg, bamberg, 52, 5, car).
+
 travel(nurnberg, rothenburg, 75, 7, car).
+travel(rothenburg, nurnberg, 75, 7, car).
+
 travel(nurnberg, regensburg, 79, 8, car).
+travel(regensburg, nurnberg, 79, 8, car).
+
 travel(regensburg, munchen, 75, 8, car).
+travel(munchen, regensburg, 75, 8, car).
+
 travel(nurnberg, munchen, 121, 12, car).
+travel(munchen, nurnberg, 121, 12, car).
+
 travel(rothenburg, munchen, 167, 17, car).
+travel(munchen, rothenburg, 167, 17, car).
+
 travel(rothenburg, fussen, 143, 14, car).
+travel(fussen, rothenburg, 143, 14, car).
+
 travel(rothenburg, lindau, 142, 14, car).
+travel(lindau, rothenburg, 142, 14, car).
+
 travel(lindau, munchen, 128, 12, car).
+travel(munchen, lindau, 128, 12, car).
+
 travel(lindau, fussen, 77, 8, car).
+travel(fussen, lindau, 77, 8, car).
+
 travel(lindau, bregenz, 16, 2, car).
+travel(bregenz, lindau, 16, 2, car).
+
 travel(bregenz, innsbruck, 129, 13, car).
+travel(innsbruck, bregenz, 129, 13, car).
+
 travel(fussen, ettal, 46, 5, car).
+travel(ettal, fussen, 46, 5, car).
+
 travel(ettal, munchen, 66, 7, car).
+travel(munchen, ettal, 66, 7, car).
+
 travel(ettal, innsbruck, 69, 7, car).
+travel(innsbruck, ettal, 69, 7, car).
+
 travel(munchen, innsbruck, 121, 12, car).
-
-% any travel can be done in both directions
-
-travel(X, Y, _, _) :- travel(Y, X, _, _).
+travel(innsbruck, munchen, 121, 12, car).
 
 % hotel_info(hotel, place, cost)
 
@@ -100,18 +138,17 @@ prim_action(rest(H)) :- hotel(H).
 % Precondition Axioms
 
 poss(move(To), and(
-    at(From),
-    travel(From, To, Time, _, _),
+    and(at(From), travel(From, To, Time, _, _)),
     % each day I can spend no more than 10 hours moving and visting stuff %
     =<(+(day_activity_minutes, Time), 600)
 )).
 
 poss(visit(A), and(
-    neg(visited(A)),
-    at(P),
+    and (neg(visited(A)),at(P)),
+    and (
     attraction_info(A, P, Time, _),
     % each day I can spend no more than 10 hours moving and visting stuff %
-    =<(+(day_activity_minutes, Time), 600)
+    =<(+(day_activity_minutes, Time), 600))
 )).
 
 poss(rest(H), and(
@@ -174,7 +211,8 @@ proc(full_search, [star(choose_action), ?(target(1))]).
 proc(control(full_search), search(full_search)).
 
 % test controls:
-proc(control(test1), [move(munchen)]).
+proc(control(test1), [move(munchen), move(nurnberg),
+rest(parkInnNurnberg), more(bamberg)]).
 proc(control(test2), [move(bamberg)]).
 
 
