@@ -144,11 +144,10 @@ poss(move(To), and(
 )).
 
 poss(visit(A), and(
-    and (neg(visited(A)),at(P)),
-    and (
-    attraction_info(A, P, Time, _),
-    % each day I can spend no more than 10 hours moving and visting stuff %
-    =<(+(day_activity_minutes, Time), 600))
+    and(neg(visited(A)),at(P)),
+    and(attraction_info(A, P, Time, _),
+        % each day I can spend no more than 10 hours moving and visting stuff %
+        =<(+(day_activity_minutes, Time), 600))
 )).
 
 poss(rest(H), and(
@@ -163,23 +162,28 @@ causes_val(move(To), at(From), false, and(
     travel(From, To, _, _, _)
 )).
 causes_val(move(To), at(To), true, true).
-causes_val(move(To), day_activity_minutes, day_activity_minutes + Time, and(
-    at(From),
-    travel(From, To, Time, _, _)
+causes_val(move(To), day_activity_minutes, N, and(
+    and(at(From),
+    travel(From, To, Time, _, _)),
+    N is day_activity_minutes + Time
 )).
-causes_val(move(To), total_cost, total_cost + Cost, and(
-    at(From),
-    travel(From, To, _, Cost, _)
+causes_val(move(To), total_cost, N, and(
+    and(at(From),
+    travel(From, To, _, Cost, _)),
+    N is total_cost + Cost
 )).
 
-causes_val(visit(A), day_activity_minutes, day_activity_minutes + Time, attraction_info(A, _, Time, _)).
-causes_val(visit(A), total_cost, total_cost + Cost, attraction_info(A, _, _, Cost)).
+causes_val(visit(A), day_activity_minutes, N,
+    and(attraction_info(A, _, Time, _), N is day_activity_minutes + Time)).
+causes_val(visit(A), total_cost, t, N,
+    and(attraction_info(A, _, _, Cost), N is total_cost + Cost)).
 causes_val(visit(A), visited(A), true, true).
-causes_val(visit(_), attractions_visited, attractions_visited + 1, true).
+causes_val(visit(_), attractions_visited, N, N is attractions_visited + 1).
 
-causes_val(rest(H), total_cost, total_cost + Cost, hotel_info(H, _, Cost)).
+causes_val(rest(H), total_cost, N, and(
+    hotel_info(H, _, Cost), N is total_cost + Cost)).
 causes_val(rest(_), day_activity_minutes, 0, true).
-causes_val(rest(_), days, days + 1, true).
+causes_val(rest(_), days, N, N is days + 1).
 
 % Init
 
@@ -190,31 +194,23 @@ initially(days, 0).
 initially(attractions_visited, 0).
 initially(total_cost, 0).
 
-% Definitions of complex conditions
+% Definitions of non-deterministically procedures
 
-proc(target(N), neg(attractions_visited < N)).
-
-proc(within_days(N), neg(days > N)).
-
-% Definitions of complex actions
-
-% all actions with non-deterministically chosen parameters
 proc(pi_move, pi([to], move(to))).
 proc(pi_visit, pi([a], visit(a))).
 proc(pi_rest, pi([h], rest(h))).
 
-% choosing non-deterministically between all 3 actions
-proc(choose_action, ndet(pi_move, pi_visit, pi_rest)).
+proc(find_plan, star(ndet(pi_move, pi_visit, pi_rest))).
 
 % control: full_search
-proc(full_search, [star(choose_action), ?(target(1))]).
+proc(full_search, [find_plan, ?(at(munchen))]).
 proc(control(full_search), search(full_search)).
 
 % test controls:
 proc(control(test1), [move(munchen), move(nurnberg),
-rest(parkInnNurnberg), more(bamberg)]).
-proc(control(test2), [move(bamberg)]).
+rest(parkInnNurnberg), visit(imperialCastleOfNuremberg), move(bamberg)]).
 
+proc(control(test2), [move(bamberg)]).
 
 
 
