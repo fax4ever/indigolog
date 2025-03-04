@@ -196,14 +196,16 @@ initially(total_cost, 0).
 
 % Definitions of non-deterministically procedures
 
-proc(pi_move, pi([to], move(to))).
-proc(pi_visit, pi([a], visit(a))).
-proc(pi_rest, pi([h], rest(h))).
+proc(pi_move, pi(to, move(to))).
+proc(pi_visit, pi(a, visit(a))).
+proc(pi_rest, pi(h, rest(h))).
+
+proc(pi_any, ndet(ndet(pi_visit, pi_move), pi_rest)).
 
 proc(find_plan, star(ndet(pi_move, pi_visit, pi_rest))).
 
 % control: full_search
-proc(full_search, [find_plan, ?(at(munchen))]).
+proc(full_search, [find_plan, ?(visited(imperialCastleOfNuremberg))]).
 proc(control(full_search), search(full_search)).
 
 % test controls:
@@ -211,6 +213,11 @@ proc(control(test1), [move(munchen), move(nurnberg),
 rest(parkInnNurnberg), visit(imperialCastleOfNuremberg), move(bamberg)]).
 
 proc(control(test2), [move(bamberg)]).
+
+proc(control(test3), search([pi_any, pi_any, pi_any, pi_any])).
+
+% random-walk for 2 days
+proc(control(test4), search(while(days < 2, pi_any))).
 
 
 
