@@ -209,20 +209,24 @@ proc(no_attraction(P),
 
 % Trying to prioritazie the places in which there
 % are some non visited attractions (this is a sort of heuristic)
+% or at least having no attractions
 
-proc(smart_move(P), ndet(ndet(
-    [?(attraction_not_visited(n)), move(P)],
-    [?(no_attraction(n)), move(P)]),
-    move(P)
-)).
+proc(smart_move(P), [?(attraction_not_visited(P)), move(P)]).
+
+proc(neutral_move(P), [?(no_attraction(P)), move(P)]).
 
 % Definitions of non-deterministically procedures
 
-proc(pi_move, pi(to, smart_move(to))).
 proc(pi_visit, pi(a, visit(a))).
+proc(pi_smart_move, pi(to, smart_move(to))).
+proc(pi_neutral_move, pi(to, neutral_move(to))).
+proc(pi_move, pi(to, move(p))).
 proc(pi_rest, pi(h, rest(h))).
 
-proc(pi_any, ndet(ndet(pi_visit, pi_move), pi_rest)).
+% Prioritize them - try to make more visits possible!
+% this works preatty well compared to a random walk search
+
+proc(pi_any, ndet(ndet(pi_visit, ndet(pi_smart_move, pi_neutral_move)), ndet(pi_rest, pi_move))).
 
 % single steps tests:
 proc(control(test1), [move(munchen), move(nurnberg),
@@ -232,7 +236,7 @@ proc(control(test2), [move(bamberg)]).
 
 proc(control(test3), search([pi_any, pi_any, pi_any, pi_any])).
 
-% random-walk for 2 days
+% domain-dependent-heuristic-walk for 2 days
 proc(control(test4), search(while(days < 2, pi_any))).
 
 % try to visit N attractions in at most D days
@@ -240,6 +244,7 @@ proc(find_n_attractions(N, D), while(attractions_visited < N,
     [?(days =< D), pi_any]
 )).
 
+% test find_n_attractions
 proc(control(test5), search(find_n_attractions(5, 1))).
 
 
