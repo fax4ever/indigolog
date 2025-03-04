@@ -228,7 +228,7 @@ proc(pi_rest, pi(h, rest(h))).
 
 proc(pi_any, ndet(ndet(pi_visit, ndet(pi_smart_move, pi_neutral_move)), ndet(pi_rest, pi_move))).
 
-% single steps tests:
+% single steps tests (for debug purpose!):
 proc(control(test1), [move(munchen), move(nurnberg),
 rest(parkInnNurnberg), visit(imperialCastleOfNuremberg), move(bamberg)]).
 
@@ -244,20 +244,34 @@ proc(find_n_attractions(N, D), while(attractions_visited < N,
     [?(days =< D), pi_any]
 )).
 
-% test find_n_attractions
-proc(control(test5), search(find_n_attractions(5, 1))).
+% try to visit 3 provides attractions spending at most C
+proc(visit_saving_costs(A1, A2, A3, C), while(
+    or(or(neg(visited(A1)), neg(visited(A2))), neg(visited(A3))), 
+    [?(total_cost =< C), pi_any]
+)).
+
+% try to visit 3 provides attractions in at most D days
+proc(visit_saving_times(A1, A2, A3, D), while(
+    or(or(neg(visited(A1)), neg(visited(A2))), neg(visited(A3))), 
+    [?(days =< D), pi_any]
+)).
 
 % PROBLEM 1 %
 % Given a hotel, find all the attractions I can reach there in a given amount of time, using
 % airplanes, trains or renting a car
+proc(control(problem1), search(find_n_attractions(12, 4))).
 
-proc(maximise_attraction(N, D),  % reverse iterative deepening search starting with attactions to visit
-    ndet( find_n_attractions(N, D), 
-    [?(N >= 0), pi(n, [?(n is N - 1), maximise_attraction(n, D)])]
-)).
+% PROBLEM 2 %
+% Determine If we can visit 3 given attractions with a given amount of money %
+proc(control(problem2), 
+    search(visit_saving_costs(neuschwansteinCastle, rothenburgObDerTauber, lindauHafen, 500))).
 
-% try to visit 14 attractions / not possible %
-proc(control(problem1), search(maximise_attraction(14, 1))).
+% PROBLEM 3 %
+% Determine If we can visit 3 given attractions with a given amount of time %
+proc(control(problem3), 
+    search(visit_saving_times(neuschwansteinCastle, rothenburgObDerTauber, lindauHafen, 2))).
+
+
 
 
 
