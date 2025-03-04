@@ -247,5 +247,17 @@ proc(find_n_attractions(N, D), while(attractions_visited < N,
 % test find_n_attractions
 proc(control(test5), search(find_n_attractions(5, 1))).
 
+% PROBLEM 1 %
+% Given a hotel, find all the attractions I can reach there in a given amount of time, using
+% airplanes, trains or renting a car
+
+proc(maximise_attraction(N, D),  % reverse iterative deepening search starting with attactions to visit
+    ndet( find_n_attractions(N, D), 
+    [?(N >= 0), pi(n, [?(n is N - 1), maximise_attraction(n, D)])]
+)).
+
+% try to visit 14 attractions / not possible %
+proc(control(problem1), search(maximise_attraction(14, 1))).
+
 
 
