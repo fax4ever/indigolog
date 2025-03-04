@@ -194,21 +194,37 @@ initially(days, 0).
 initially(attractions_visited, 0).
 initially(total_cost, 0).
 
+% Utility procedure
+
+% We want to tendentially avoid to pass more times in a place 
+% for which we visited all the attractions
+
+proc(attraction_not_visited(P), 
+    some(A, and(attraction_info(A, P, _, _), neg(visited(A))))
+).
+
+proc(no_attraction(P),
+    neg(some(A, attraction_info(A, P, _, _)))
+).
+
+% Trying to prioritazie the places in which there
+% are some non visited attractions (this is a sort of heuristic)
+
+proc(smart_move(P), ndet(ndet(
+    [?(attraction_not_visited(n)), move(P)],
+    [?(no_attraction(n)), move(P)]),
+    move(P)
+)).
+
 % Definitions of non-deterministically procedures
 
-proc(pi_move, pi(to, move(to))).
+proc(pi_move, pi(to, smart_move(to))).
 proc(pi_visit, pi(a, visit(a))).
 proc(pi_rest, pi(h, rest(h))).
 
 proc(pi_any, ndet(ndet(pi_visit, pi_move), pi_rest)).
 
-proc(find_plan, star(ndet(pi_move, pi_visit, pi_rest))).
-
-% control: full_search
-proc(full_search, [find_plan, ?(visited(imperialCastleOfNuremberg))]).
-proc(control(full_search), search(full_search)).
-
-% test controls:
+% single steps tests:
 proc(control(test1), [move(munchen), move(nurnberg),
 rest(parkInnNurnberg), visit(imperialCastleOfNuremberg), move(bamberg)]).
 
@@ -218,6 +234,13 @@ proc(control(test3), search([pi_any, pi_any, pi_any, pi_any])).
 
 % random-walk for 2 days
 proc(control(test4), search(while(days < 2, pi_any))).
+
+% try to visit N attractions in at most D days
+proc(find_n_attractions(N, D), while(attractions_visited < N, 
+    [?(days =< D), pi_any]
+)).
+
+proc(control(test5), search(find_n_attractions(5, 1))).
 
 
 
